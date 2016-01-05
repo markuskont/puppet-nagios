@@ -13,7 +13,9 @@
 class nagios::client::ssh (
   $ssh_public_key       =   undef,
   $custom_plugin_dir    =   $nagios::params::custom_plugins_dir,
-  $user                 =   $nagios::params::user
+  $user                 =   $nagios::params::user,
+  $confdir              =   $nagios::params::confdir,
+  $check_load           =   true
   ) inherits nagios::client {
 
   if ( $ssh_public_key == undef ) {
@@ -29,5 +31,16 @@ class nagios::client::ssh (
     type        => 'rsa',
     key         => $ssh_public_key,
     require     => [ User[$user] ],
+  }
+  # Services
+  if check_load == true {
+    @@nagios_service { "check_ssh_load_${fqdn}":
+      check_command       => "check_ssh_load!5.0,4.0,3.0!10.0,6.0,4.0",
+      use                 => "generic-service",
+      host_name           => $::fqdn,
+      target              => "${confdir}/${fqdn}.cfg",
+      notification_period => "24x7",
+      service_description => 'Host Load Check via SSH'
+    }  
   }
 }

@@ -30,6 +30,16 @@ class nagios::monitor (
     enable     => true,
     require    => Package[$service],
   }
+
+  # TODO:
+  # Eraldi moodulisse, create_resources + hiera
+  nagios_command { 'check_ssh_load':
+    command_line => '$USER1$/check_by_ssh -H $HOSTADDRESS$ -C "/usr/lib/nagios/plugins/check_load -w $ARG1$ -c $ARG2$"',
+    mode         => '0640',
+    owner        => $user,
+    target       => "${confdir}/custom_commands.cfg"
+  }
+
   # collect resources and populate config dir
   Nagios_host <<||>> {
     notify  => [ Service[$service], Exec['fix-permissions'] ]
