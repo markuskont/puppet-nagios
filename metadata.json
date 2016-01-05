@@ -1,0 +1,33 @@
+{
+  "name": "markuskont-bacula",
+  "version": "0.0.1",
+  "author": "Markus Kont",
+  "summary": "Manages Bacula server and clients",
+  "license": "N/A",
+  "source": "git@git.spin.ee:devops/puppet-bacula.git",
+  "project_page": "https://git.spin.ee/devops/puppet-bacula",
+  "issues_url": "https://git.spin.ee/devops/puppet-bacula/issues",
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Ubuntu",
+      "operatingsystemrelease": [
+        "12.04",
+        "14.04"
+      ]
+    },
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "7",
+	"8"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "name": "puppetlabs-stdlib",
+      "name": "puppetlabs-concat",
+      "version_range": ">=4.0.0 <5.0.0"
+    }
+  ]
+}
