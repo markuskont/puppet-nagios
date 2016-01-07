@@ -33,12 +33,24 @@ class nagios::client::ssh (
     require     => [ User[$user] ],
   }
   # Services
-  if check_load == true {
+  if $check_load == true {
+    # warning for 1, 5 and 15 minute load respectively
+    $wload1 = $::processors['count'] * 2
+    $wload5 = $::processors['count']
+    $wload15 = $::processors['count']
+    # critical for 1, 5 and 15 minute load respectively
+    $cload1 = $::processors['count'] * 4
+    $cload5 = floor($::processors['count'] * 1.5)
+    $cload15 = floor($::processors['count'] * 1.5)
+    
+    #$test = 5/2
+    #notify {"$test":}
+
     @@nagios_service { "check_ssh_load_${fqdn}":
-      check_command       => "check_ssh_load!5.0,4.0,3.0!10.0,6.0,4.0",
+      check_command       => "check_ssh_load!${wload1}.0,${wload5}.0,${wload15}.0!${cload1}.0,${cload5}.0,${cload15}.0",
       use                 => "generic-service",
       host_name           => $::fqdn,
-      target              => "${confdir}/${fqdn}.cfg",
+      target              => "${confdir}/${fqdn}_services.cfg",
       notification_period => "24x7",
       service_description => 'Host Load Check via SSH'
     }  

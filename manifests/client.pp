@@ -15,7 +15,8 @@ class nagios::client (
   $plugin_package =   $nagios::params::plugin_package,
   $user           =   $nagios::params::user,
   $ssh            =   undef,
-  $ssh_public_key =   undef
+  $ssh_public_key =   undef,
+  $check_load     =   true
   ) inherits nagios::params {
 
   $target = "${confdir}/${fqdn}.cfg"
