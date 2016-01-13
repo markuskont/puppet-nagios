@@ -22,18 +22,24 @@ class nagios::client::ssh (
   if ( $nagios_ssh_keys == undef ) {
     fail 'Public keys must be defined as hash when using SSH'
   }
+  file { $homedir:
+    ensure      => directory,
+    mode        => '0750',
+    owner       => $user,
+  }
   user { "$user":
     ensure      => 'present',
     password    => '!',
     shell       => '/bin/bash',
     home        => $homedir,
-    managehome  => true
+    managehome  => true,
+    require     => File[$homedir]
   }
 
   $key_defaults = {
-      'ensure'    =>  present,
-      'user'      =>  $user,
-      'type'      =>  'rsa'
+    'ensure'    =>  present,
+    'user'      =>  $user,
+    'type'      =>  'rsa'
   }
 
   create_resources(ssh_authorized_key, $nagios_ssh_keys, $key_defaults)
@@ -53,9 +59,6 @@ class nagios::client::ssh (
     $cload1 = $::processors['count'] * 4
     $cload5 = floor($::processors['count'] * 1.5)
     $cload15 = floor($::processors['count'] * 1.5)
-    
-    #$test = 5/2
-    notify {"$environment":}
 
     @@nagios_service { "check_ssh_load_${fqdn}":
       check_command       => "check_ssh_load!${wload1}.0,${wload5}.0,${wload15}.0!${cload1}.0,${cload5}.0,${cload15}.0",
