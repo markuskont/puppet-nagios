@@ -22,20 +22,18 @@ class nagios::client::ssh (
   if ( $nagios_ssh_keys == undef ) {
     fail 'Public keys must be defined as hash when using SSH'
   }
-  file { $homedir:
-    ensure      => directory,
-    mode        => '0750',
-    owner       => $user,
-  }
   user { "$user":
     ensure      => 'present',
     password    => '!',
     shell       => '/bin/bash',
     home        => $homedir,
-    managehome  => true,
-    require     => File[$homedir]
+    managehome  => true
   }
-
+  #file { $homedir:
+  #  ensure      => directory,
+  #  mode        => '0750',
+  #  owner       => $user,
+  #}
   $key_defaults = {
     'ensure'    =>  present,
     'user'      =>  $user,
