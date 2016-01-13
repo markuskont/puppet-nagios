@@ -29,11 +29,12 @@ class nagios::client::ssh (
     home        => $homedir,
     managehome  => true
   }
-  #file { $homedir:
-  #  ensure      => directory,
-  #  mode        => '0750',
-  #  owner       => $user,
-  #}
+  file { $homedir:
+    ensure      => directory,
+    mode        => '0750',
+    owner       => $user,
+    require     => User[$user]
+  }
   $key_defaults = {
     'ensure'    =>  present,
     'user'      =>  $user,
