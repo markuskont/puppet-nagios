@@ -19,4 +19,6 @@ class nagios::params {
   $plugin_package     	=   'nagios-plugins'
   $custom_plugins_dir   =   '/opt/nagios_plugins'
   $homedir 				= 	'/home/nagios'
+
+  $load_check_enabled	= 	true
 }

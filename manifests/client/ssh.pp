@@ -15,7 +15,7 @@ class nagios::client::ssh (
   $custom_plugin_dir    =   $nagios::params::custom_plugins_dir,
   $user                 =   $nagios::params::user,
   $confdir              =   $nagios::params::confdir,
-  $check_load           =   true
+  $check_load           =   $nagios::params::load_check_enabled,
   $homedir              =   $nagios::params::homedir
   ) inherits nagios::client {
 
