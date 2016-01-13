@@ -16,6 +16,7 @@ class nagios::client::ssh (
   $user                 =   $nagios::params::user,
   $confdir              =   $nagios::params::confdir,
   $check_load           =   true
+  $homedir              =   $nagios::params::homedir
   ) inherits nagios::client {
 
   if ( $nagios_ssh_keys == undef ) {
@@ -25,6 +26,8 @@ class nagios::client::ssh (
     ensure      => 'present',
     password    => '!',
     shell       => '/bin/bash',
+    home        => $homedir,
+    managehome  => true
   }
 
   $key_defaults = {

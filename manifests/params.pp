@@ -12,10 +12,11 @@
 #  class { 'nagios::params': }
 #
 class nagios::params {
-  $server_package     =   'nagios3'
-  $confdir        =   "/etc/nagios3/conf.d"
-  $user           =   'nagios'
+  $server_package     	=   'nagios3'
+  $confdir        		=   "/etc/nagios3/conf.d"
+  $user           		=   'nagios'
 
-  $plugin_package     =   'nagios-plugins'
+  $plugin_package     	=   'nagios-plugins'
   $custom_plugins_dir   =   '/opt/nagios_plugins'
+  $homedir 				= 	'/home/nagios'
 }
