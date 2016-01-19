@@ -26,7 +26,7 @@ class nagios::client (
   @@nagios_host { $fqdn:
     ensure        =>  present,
     alias         =>  $::hostname,
-    address       =>  $::fqdn,
+    address       =>  $::ipaddress,
     use           =>  "generic-host",
     target        =>  $target,
     owner         =>  $user,
