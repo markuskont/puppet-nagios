@@ -16,7 +16,7 @@ class nagios::params {
   $confdir        		=   "/etc/nagios3/conf.d"
   $user           		=   'nagios'
 
-  $plugin_package     	=   'nagios-plugins'
+  $plugin_package     	=   'nagios-plugins-basic'
   $custom_plugins_dir   =   '/opt/nagios_plugins'
   $homedir 				= 	'/var/lib/nagios'
 
