@@ -1,29 +1,22 @@
-#def discover_blockdevs
-#  bdevs = []
-#  Dir.glob("/sys/block/sd?") do |path|
-#    bdevs << BlockInfo.new(path[/sd./])
-#  end
-#  Dir.glob("/sys/block/md?") do |path|
-#    bdevs << BlockInfo.new(path[/md./])
-#  end
-#  Dir.glob("/sys/block/cciss!c?d?") do |path|
-#    bdevs << BlockInfo.new(path[/cciss!..../].sub(/!/, "_"))
-#  end
-#  return bdevs
-#end
+#require 'pathname'
+#
+def parse_blockdev_dir()
+  sysfs_block_directory = '/sys/block/'
+  blockdevices = {}
 
-Facter.add(:linux_softraid_arrays) do
+  if File.exist?(sysfs_block_directory)
+    Dir.entries(sysfs_block_directory).each do |device|
+      if (device =~ /^md\d+/)
+        (blockdevices["mdadm"] ||= []) << device
+      end
+    end
+  end
+  return blockdevices
+end
+
+Facter.add(:raid_arrays) do
   confine :kernel => 'Linux'
   setcode do
-    bdevs = []
-    count = 0
-    disks = Facter.value(:disks)
-    results = disks
-
-    disks.each do |device|
-      bdevs[count] = device
-      count += 1
-    end
-    bdevs
+    parse_blockdev_dir
   end
 end
