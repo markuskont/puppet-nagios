@@ -66,6 +66,22 @@ class nagios::client::ssh (
       target              => "${confdir}/${fqdn}_services.cfg",
       notification_period => "24x7",
       service_description => 'Host Load Check via SSH'
-    }  
+    } 
+  }
+  if $check_raid == true and $is_virtual == false {
+    notify{'asd':}
+    # move to another pp file and require; multiple services need this folder
+    file { $custom_plugins_dir:
+        ensure => "directory",
+        mode => '0755',
+        owner => $user,
+    }
+    file { "${custom_plugins_dir}/check_md_raid":
+        ensure => present,
+        mode => '0750',
+        owner => $user,
+        group => root,
+        source => "puppet:///modules/nagios/check_md_raid.py",
+    }
   }
 }

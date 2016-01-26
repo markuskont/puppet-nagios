@@ -21,4 +21,5 @@ class nagios::params {
   $homedir 				= 	'/var/lib/nagios'
 
   $load_check_enabled	= 	true
+  $raid_check_enabled	= 	true
 }

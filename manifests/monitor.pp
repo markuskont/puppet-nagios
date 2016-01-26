@@ -39,6 +39,13 @@ class nagios::monitor (
     owner        => $user,
     target       => "${confdir}/custom_commands.cfg"
   }
+  # build custom path dynamically from params.pp
+  nagios_command { 'check_ssh_md_raid':
+    command_line => '$USER1$/check_by_ssh -H $HOSTADDRESS$ -C "/opt/nagios_plugins/check_md_raid -d $ARG1$"',
+    mode         => '0640',
+    owner        => $user,
+    target       => "${confdir}/custom_commands.cfg"
+  }
 
   # collect resources and populate config dir
   Nagios_host <<||>> {
