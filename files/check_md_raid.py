@@ -48,12 +48,12 @@ def main():
         # iterate a hash of possible scenarios
         if re.match('.*_.*', line):
           nagiosReturn(2, "Missing devices in array")
-        elif re.match('recovery'):
+        elif re.match('recovery', line):
           nagiosReturn(1, "Array in RECOVERY")
-        elif re.match('resync'):
+        elif re.match('resync', line):
           nagiosReturn(1, "Array in RESYNC")
-        elif re.match('check'):
-          nagiosReturn(0, "Array in CONSISTENCY CHECK; System may be slower than usual")
+        elif re.match('check', line):
+          nagiosReturn(1, "Array in CONSISTENCY CHECK; System may be slower than usual")
         else:
           nagiosReturn(0, "No issues detected")
 

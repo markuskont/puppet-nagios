@@ -16,6 +16,7 @@ class nagios::client::ssh (
   $user                 =   $nagios::params::user,
   $confdir              =   $nagios::params::confdir,
   $check_load           =   $nagios::params::load_check_enabled,
+  $check_raid           =   $nagios::params::raid_check_enabled,
   $homedir              =   $nagios::params::homedir
   ) inherits nagios::client {
 
@@ -34,6 +35,11 @@ class nagios::client::ssh (
     mode        => '0750',
     owner       => $user,
     require     => User[$user]
+  }
+  file { $custom_plugins_dir:
+      ensure => "directory",
+      mode => '0755',
+      owner => $user,
   }
   $key_defaults = {
     'ensure'    =>  present,
@@ -68,20 +74,26 @@ class nagios::client::ssh (
       service_description => 'Host Load Check via SSH'
     } 
   }
-  if $check_raid == true and $is_virtual == false {
-    notify{'asd':}
-    # move to another pp file and require; multiple services need this folder
-    file { $custom_plugins_dir:
-        ensure => "directory",
-        mode => '0755',
-        owner => $user,
-    }
-    file { "${custom_plugins_dir}/check_md_raid":
-        ensure => present,
-        mode => '0750',
-        owner => $user,
-        group => root,
-        source => "puppet:///modules/nagios/check_md_raid.py",
+  if $check_raid == true and $::is_virtual == false and $raid_arrays {
+    $mdadm_arrays = $raid_arrays['mdadm']
+    if $mdadm_arrays {
+      file { "${custom_plugins_dir}/check_md_raid":
+          ensure => present,
+          mode => '0750',
+          owner => $user,
+          group => root,
+          source => "puppet:///modules/nagios/check_md_raid.py",
+      }
+      $mdadm_arrays.each |String $array| {
+        @@nagios_service { "check_ssh_md_raid_${fqdn}_${array}":
+          check_command       => "check_ssh_md_raid!${array}",
+          use                 => "generic-service",
+          host_name           => $::fqdn,
+          target              => "${confdir}/${fqdn}_services.cfg",
+          notification_period => "24x7",
+          service_description => 'Check Linux Software RAID via SSH'
+        }  
+      }   
     }
   }
 }
