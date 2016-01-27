@@ -91,7 +91,7 @@ class nagios::client::ssh (
           host_name           => $::fqdn,
           target              => "${confdir}/${fqdn}_services.cfg",
           notification_period => "24x7",
-          service_description => 'Check Linux Software RAID via SSH'
+          service_description => 'Linux Software RAID Check via SSH'
         }  
       }   
     }
