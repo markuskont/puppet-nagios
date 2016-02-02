@@ -59,19 +59,20 @@ class nagios::client::ssh (
     # warning for 1, 5 and 15 minute load respectively
     $wload1 = $::processors['count'] * 2
     $wload5 = $::processors['count']
-    $wload15 = $::processors['count']
+    $wload15 = $::processors['count'] * 0.5
     # critical for 1, 5 and 15 minute load respectively
     $cload1 = $::processors['count'] * 4
-    $cload5 = floor($::processors['count'] * 1.5)
-    $cload15 = floor($::processors['count'] * 1.5)
+    $cload5 = $::processors['count'] * 1.5
+    $cload15 = $::processors['count']
 
     @@nagios_service { "check_ssh_load_${fqdn}":
-      check_command       => "check_ssh_load!${wload1}.0,${wload5}.0,${wload15}.0!${cload1}.0,${cload5}.0,${cload15}.0",
+      check_command       => "check_ssh_load!${wload1},${wload5},${wload15}!${cload1},${cload5},${cload15}",
       use                 => "generic-service",
       host_name           => $::fqdn,
       target              => "${confdir}/${fqdn}_services.cfg",
       notification_period => "24x7",
-      service_description => 'Host Load Check via SSH'
+      service_description => 'Host Load Check via SSH',
+      check_interval      => 1
     } 
   }
   if $check_raid == true and $::is_virtual == false and $raid_arrays {
@@ -91,7 +92,8 @@ class nagios::client::ssh (
           host_name           => $::fqdn,
           target              => "${confdir}/${fqdn}_services.cfg",
           notification_period => "24x7",
-          service_description => 'Linux Software RAID Check via SSH'
+          service_description => 'Linux Software RAID Check via SSH',
+          check_interval      => 30
         }  
       }   
     }
