@@ -22,4 +22,9 @@ class nagios::params {
 
   $load_check_enabled	= 	true
   $raid_check_enabled	= 	true
+
+  $megaraid_package 	= 	'megacli'
+  $megaraid_binary 		= 	'/usr/sbin/megacli'
+
+  $sudoers_file			= 	'/etc/sudoers.d/nagios'
 }
