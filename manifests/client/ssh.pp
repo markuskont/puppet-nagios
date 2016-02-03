@@ -48,12 +48,6 @@ class nagios::client::ssh (
   }
 
   create_resources(ssh_authorized_key, $nagios_ssh_keys, $key_defaults)
-  #ssh_authorized_key { "${user}_public_key":
-  #  user        => $user,
-  #  type        => 'rsa',
-  #  key         => $ssh_public_key,
-  #  require     => [ User[$user] ],
-  #}
   # Services
   if $check_load == true {
     # warning for 1, 5 and 15 minute load respectively
@@ -75,8 +69,8 @@ class nagios::client::ssh (
       check_interval      => 1
     } 
   }
-  if $check_raid == true and $::is_virtual == false and $raid_arrays {
-    $mdadm_arrays = $raid_arrays['mdadm']
+  if $check_raid == true and $::is_virtual == false and $blockdev_drivers {
+    $mdadm_arrays = $blockdev_drivers['mdadm']
     if $mdadm_arrays {
       file { "${custom_plugins_dir}/check_md_raid":
           ensure => present,
@@ -94,8 +88,14 @@ class nagios::client::ssh (
           notification_period => "24x7",
           service_description => 'Linux Software RAID Check via SSH',
           check_interval      => 30
-        }  
-      }   
+        }
+      }
+    }
+    $megaraid_sas_arrays = $blockdev_drivers['megaraid_sas']
+    if $megaraid_sas_arrays {
+      $megaraid_sas_arrays.each |String $array| {
+        notify{"testing, found ${array}":}
+      }
     }
   }
 }

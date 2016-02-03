@@ -2,11 +2,12 @@
 require 'open3'
 
 def parse_udev_driver(device)
-  driver = ''
   cmd = "udevadm info -a -n #{device}"
   Open3.popen3(cmd) do |stdin, stdout, stderr, wait_thr|
     while line = stdout.gets
       if /DRIVERS=="(megaraid_sas)"/.match(line)
+        return $1
+      elsif /DRIVERS=="(ahci)"/.match(line)
         return $1
       end
     end
@@ -32,7 +33,7 @@ def parse_blockdev_dir()
   return blockdevices
 end
 
-Facter.add(:raid_arrays) do
+Facter.add(:blockdev_drivers) do
   confine :kernel => 'Linux'
   setcode do
     parse_blockdev_dir
