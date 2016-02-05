@@ -23,11 +23,14 @@ def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('-d', '--device', help='Device node definition, e.g md1')
   parser.add_argument('-s', '--statfile', default='/proc/mdstat', help='File containing raid stats. By default /proc/mdstat')
+  
   args = parser.parse_args()
+  
+  code = 0
+  message = ''
 
   if args.device is None:
     nagiosReturn(3, "--device argument must be defined. Refer to -h or --help")
-
   try:
     f = open(args.statfile, 'r')
   except:
@@ -35,6 +38,7 @@ def main():
 
   for line in f:
     if line.startswith(args.device):
+      message = line.rstrip('\n').strip()
       # Disk membership is usually on next line
       # rebuild prgress is usually on the one after that
       # http://stackoverflow.com/questions/13572062/python-for-loop-with-files-how-to-grab-the-next-line-within-forloop
@@ -42,20 +46,26 @@ def main():
         try:
           line = f.next()
         except:
-          nagiosReturn(3, "Unable to grab subsequent lines after identifying device")
-
+          break
         # move this to another functions
         # iterate a hash of possible scenarios
         if re.match('.*_.*', line):
-          nagiosReturn(2, "Missing devices in array")
-        elif re.match('recovery', line):
-          nagiosReturn(1, "Array in RECOVERY")
-        elif re.match('resync', line):
-          nagiosReturn(1, "Array in RESYNC")
-        elif re.match('check', line):
-          nagiosReturn(1, "Array in CONSISTENCY CHECK; System may be slower than usual")
-        else:
-          nagiosReturn(0, "No issues detected")
+          code = 2
+          message = message + ';' + line.rstrip('\n').strip()
+        if re.match('.*recovery.*', line):
+          if code == 0:
+            code = 1
+          message = message + ';' + line.rstrip('\n').strip()
+        if re.match('.*resync.*', line):
+          if code == 0:
+            code = 1
+          message = message + ';' + line.rstrip('\n').strip()
+        if re.match('.*check.*', line):
+          if code == 0:
+            code = 1
+          message = message + ';' + line.rstrip('\n').strip()
+
+  nagiosReturn(code, message)
 
 if __name__ == "__main__":
   main()

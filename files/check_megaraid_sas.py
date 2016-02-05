@@ -73,8 +73,8 @@ def main():
     nagiosReturn(3, message)
   else:
     adapters = getAdapters()
-  ld_info = getLdStatus(adapters)
-  nagiosReturn(ld_info['code'], ld_info['message'])
+    ld_info = getLdStatus(adapters)
+    nagiosReturn(ld_info['code'], ld_info['message'])
 
 if __name__ == "__main__":
   main()

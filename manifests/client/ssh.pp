@@ -91,51 +91,61 @@ class nagios::client::ssh (
           target              => "${confdir}/${fqdn}_services.cfg",
           notification_period => "24x7",
           service_description => "Linux Software RAID Check via SSH: ${array}",
-          check_interval      => 30,
+          check_interval      => 15,
           tag                 => $::environment
         }
       }
     }
     $megaraid_sas_arrays = $blockdev_drivers['megaraid_sas']
     if $megaraid_sas_arrays {
-      #file { $sudoers_file:
-      #  ensure  => present,
-      #  mode    => '0440',
-      #  owner   => root,
-      #  group   => root
-      #} ->
-      #file_line { 'allow-nagios-list-megacli-enclosure':
-      #  path => "${sudoers_file}",
-      #  line => "${user} ALL=(ALL) NOPASSWD: ${megaraid_binary} -EncInfo -AAll",
-      #}
-      #file_line { 'allow-nagios-list-megacli-logical-info':
-      #  path    => "${sudoers_file}",
-      #  line    => "${user} ALL=(ALL) NOPASSWD: ${megaraid_binary} -LDInfo -LAll -A*",
-      #}
-      #file_line { 'allow-nagios-list-megacli-physical-info':
-      #  path => "${sudoers_file}",
-      #  line => "${user} ALL=(ALL) NOPASSWD: ${megaraid_binary} -PDInfo -LAll -A*",
-      #}
-      #apt::source { 'hwraid':
-      #  location    => 'http://hwraid.le-vert.net/debian',
-      #  release     => "wheezy",
-      #  repos       => "main",
-      #  key         => '23B3D3B4',
-      #  key_source  => 'http://hwraid.le-vert.net/debian/hwraid.le-vert.net.gpg.key',
-      #} ->
-      #package { "$megaraid_package":
-      #  ensure => present
-      #}
-      #file { "${custom_plugins_dir}/check_megaraid_sas":
-      #    ensure => present,
-      #    mode => '0750',
-      #    owner => $user,
-      #    group => root,
-      #    source => "puppet:///modules/nagios/check_megaraid_sas.py",
-      #}
-      $megaraid_sas_arrays.each |String $array| {
-        notify{"testing, found ${array}":}
+      file { $sudoers_file:
+        ensure  => present,
+        mode    => '0440',
+        owner   => root,
+        group   => root
+      } ->
+      file_line { 'allow-nagios-list-megacli-enclosure':
+        path => "${sudoers_file}",
+        line => "${user} ALL=(ALL) NOPASSWD: ${megaraid_binary} -EncInfo -AAll",
       }
+      file_line { 'allow-nagios-list-megacli-logical-info':
+        path    => "${sudoers_file}",
+        line    => "${user} ALL=(ALL) NOPASSWD: ${megaraid_binary} -LDInfo -LAll -A*",
+      }
+      file_line { 'allow-nagios-list-megacli-physical-info':
+        path => "${sudoers_file}",
+        line => "${user} ALL=(ALL) NOPASSWD: ${megaraid_binary} -PDInfo -LAll -A*",
+      }
+      apt::source { 'hwraid':
+        location    => 'http://hwraid.le-vert.net/debian',
+        release     => "wheezy",
+        repos       => "main",
+        key         => '23B3D3B4',
+        key_source  => 'http://hwraid.le-vert.net/debian/hwraid.le-vert.net.gpg.key',
+      } ->
+      package { "$megaraid_package":
+        ensure => present
+      }
+      file { "${custom_plugins_dir}/check_megaraid_sas":
+          ensure => present,
+          mode => '0750',
+          owner => $user,
+          group => root,
+          source => "puppet:///modules/nagios/check_megaraid_sas.py",
+      }
+      @@nagios_service { "check_ssh_megaraid_sas_${fqdn}_${array}":
+        check_command       => "check_ssh_megaraid_sas",
+        use                 => "generic-service",
+        host_name           => $::fqdn,
+        target              => "${confdir}/${fqdn}_services.cfg",
+        notification_period => "24x7",
+        service_description => "LSI MegaRAID SAS Check via SSH: All Adapters",
+        check_interval      => 15,
+        tag                 => $::environment
+      }
+      #$megaraid_sas_arrays.each |String $array| {
+      #  notify{"testing, found ${array}":}
+      #}
     }
   }
 }

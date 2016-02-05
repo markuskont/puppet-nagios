@@ -12,19 +12,20 @@
 #  class { 'nagios::params': }
 #
 class nagios::params {
-  $server_package     	=   'nagios3'
-  $confdir        		=   "/etc/nagios3/conf.d"
-  $user           		=   'nagios'
+  $server_package         =   'nagios3'
+  $confdir        		    =   '/etc/nagios3/conf.d'
+  $custom_commands_file   =   'custom_commands.cfg'
+  $user           		    =   'nagios'
 
-  $plugin_package     	=   'nagios-plugins-basic'
-  $custom_plugins_dir   =   '/opt/nagios_plugins'
-  $homedir 				= 	'/var/lib/nagios'
+  $plugin_package         =   'nagios-plugins-basic'
+  $custom_plugins_dir     =   '/opt/nagios_plugins'
+  $homedir                = 	'/var/lib/nagios'
 
-  $load_check_enabled	= 	true
-  $raid_check_enabled	= 	true
+  $load_check_enabled	    = 	true
+  $raid_check_enabled	    = 	true
 
-  $megaraid_package 	= 	'megacli'
-  $megaraid_binary 		= 	'/usr/sbin/megacli'
+  $megaraid_package       = 	'megacli'
+  $megaraid_binary        = 	'/usr/sbin/megacli'
 
-  $sudoers_file			= 	'/etc/sudoers.d/nagios'
+  $sudoers_file           = 	'/etc/sudoers.d/nagios'
 }
