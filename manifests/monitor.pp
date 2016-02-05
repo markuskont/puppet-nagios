@@ -15,7 +15,6 @@ class nagios::monitor (
   $service  =   $nagios::params::server_package,
   $user     =   $nagios::params::user
   ) inherits nagios::params {
-
   package { $service: 
     ensure => present,
   }
@@ -30,7 +29,6 @@ class nagios::monitor (
     enable     => true,
     require    => Package[$service],
   }
-
   # TODO:
   # Eraldi moodulisse, create_resources + hiera
   nagios_command { 'check_ssh_load':
@@ -46,13 +44,17 @@ class nagios::monitor (
     owner        => $user,
     target       => "${confdir}/custom_commands.cfg"
   }
-
-  # collect resources and populate config dir
   Nagios_host <<||>> {
     notify  => [ Service[$service], Exec['fix-permissions'] ]
   }
-  
-  Nagios_service <<||>> {
-    notify  => [ Service[$service], Exec['fix-permissions'] ]
+  # collect resources and populate config dir
+  if $::environment == 'devel' {
+    Nagios_service <<| tag == 'devel' |>> {
+      notify  => [ Service[$service], Exec['fix-permissions'] ]
+    }
+  } else {
+    Nagios_service <<| tag != 'devel' |>> {
+      notify  => [ Service[$service], Exec['fix-permissions'] ]
+    }
   }
 }
