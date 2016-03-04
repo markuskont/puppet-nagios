@@ -37,4 +37,17 @@ class nagios::client (
       nagios_ssh_keys  =>  $nagios_ssh_keys
     }
   }
+  if $email_server {
+    notify {'email':}
+    @@nagios_service { "check_rbl_${fqdn}":
+      check_command       => "check_rbl",
+      use                 => "generic-service",
+      host_name           => $::fqdn,
+      target              => "${confdir}/${fqdn}_services.cfg",
+      notification_period => "24x7",
+      service_description => 'RBL check',
+      check_interval      => 30,
+      tag                 => $::environment
+    }
+  }
 }
