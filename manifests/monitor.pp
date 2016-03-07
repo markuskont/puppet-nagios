@@ -57,11 +57,20 @@ class nagios::monitor (
   class {'cpan':
     manage_package => false,
   }
+  $modules = [ 
+              "Data::Validate::Domain",
+              "Data::Validate::IP",
+              "Monitoring::Plugin",
+              "Net::DNS",
+              "Readonly"
+            ]
   # Install the module for domain validation
-  cpan { "Data::Validate::Domain":
-    ensure  => present,
-    require => Class['::cpan'],
-    force   => true,
+  $modules.each |String $module| {
+    cpan { "$module":
+      ensure  => present,
+      require => Class['::cpan'],
+      force   => true,
+    }    
   }
   # Distribute check script (perl)
   file { "/usr/lib/nagios/plugins/check_rbl":
