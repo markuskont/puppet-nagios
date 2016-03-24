@@ -20,7 +20,7 @@ class nagios::client (
   ) inherits nagios::params {
 
   $target = "${confdir}/${environment}.cfg"
-  package { $plugin_package: 
+  package { $plugin_package:
     ensure        =>  present,
   }
   @@nagios_host { $fqdn:
@@ -38,7 +38,6 @@ class nagios::client (
     }
   }
   if $email_server {
-    notify {'email':}
     @@nagios_service { "check_rbl_${fqdn}":
       check_command       => "check_rbl",
       use                 => "generic-service",

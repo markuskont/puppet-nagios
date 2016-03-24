@@ -1,6 +1,7 @@
 require 'open3'
 
 Facter.add("email_server") do
+  confine :kernel => 'Linux'
   hash = {}
   cmd = "which postfix sendmail"
 
@@ -11,7 +12,7 @@ Facter.add("email_server") do
   end
   if ( hash['path'] )
     hash['installed'] = true
-    setcode do 
+    setcode do
       hash
     end
   end
