@@ -42,7 +42,7 @@ def getLdStatus(adapters):
   code = 0
   message = ''
   regex_ld = re.compile('Virtual Drive: (\d+)')
-  regex_state = re.compile('State\s*:\s*(\w+)')
+  regex_state = re.compile('State\s*:\s*(.+)$')
   for a in adapters:
     message = message + ' Adp: ' + a
     opt = "-A%s" % a
