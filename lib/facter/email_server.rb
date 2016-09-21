@@ -14,8 +14,10 @@ Facter.add("email_server") do
   end
   if ( hash['path'] )
     hash['installed'] = true
-    setcode do
-      hash
-    end
+  else
+    hash['installed'] = false
+  end
+  setcode do
+    hash
   end
 end
